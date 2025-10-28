@@ -10,6 +10,7 @@ import AdminDashboard from "../pages/AdminDashboard.vue";
 import { useAuthStore } from "../stores/auth";
 
 import MainLayout from "../layout/MainLayout.vue";
+import AdminLayout from "../layout/AdminLayout.vue";
 // import AdminLayout from "../layout/AdminLayout.vue";
 
 const router = createRouter({
@@ -25,18 +26,25 @@ const router = createRouter({
         { path: "/loan/apply", component: LoanApply },
       ],
     },
+    {
+      path: '/dashboard',
+      component: AdminLayout,
+      children: [
+        { path: '', name: 'Dashboard', component: AdminDashboard },
+        { path: "loan", name: 'Loan', component: LoanList },
+      ],
+    },
 
     { path: "/profile", component: Profile },
     { path: "/profile/edit", component: ProfileEdit },
     
-    { path: "/loan/list", component: LoanList },
-    { path: "/admin", component: AdminDashboard },
+    
   ],
 });
 
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore();
-  const publicPages = ["/", "/login", "/register", "/loan/apply"];
+  const publicPages = ["/", "/login", "/register", "/loan/apply",];
   const authRequired = !publicPages.includes(to.path);
 
   if (authRequired && !auth.token) return next("/login");

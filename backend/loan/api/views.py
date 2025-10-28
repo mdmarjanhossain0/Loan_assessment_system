@@ -2,7 +2,9 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth import authenticate
+from rest_framework.authentication import BasicAuthentication
 
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -22,6 +24,10 @@ from mysite.constants import (
 )
 
 
+from account.permissions import (
+    OrPermission,
+    LoanPostermission
+)
 from loan.utils import (
     calculate_dsr,
     extract_text_from_image,
@@ -33,7 +39,18 @@ from loan.utils import (
 class LoanApplicationViewSet(viewsets.ModelViewSet):
     queryset = LoanApplication.objects.all().order_by("-pk")
     serializer_class = LoanApplicationSerializer
-    permission_classes = [AllowAny]
+    authentication_classes = [JWTAuthentication, BasicAuthentication]
+    permission_classes = [LoanPostermission]
+
+
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        if self.request.method == "GET" and self.action == "retrieve":
+            context["depth"] = 1
+        return context
+
+    
 
     @action(detail=False, methods=["post"], parser_classes=[MultiPartParser, FormParser], serializer_class=LoanDocumentSerializer)
     def upload_document(self, request):

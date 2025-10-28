@@ -18,3 +18,8 @@ class LoanApplicationSerializer(serializers.ModelSerializer):
         if not value or len(value) == 0:
             raise serializers.ValidationError("At least one document is required.")
         return value
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        depth = self.context.get("depth", 0)
+        self.Meta.depth = depth
