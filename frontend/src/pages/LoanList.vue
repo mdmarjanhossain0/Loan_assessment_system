@@ -201,6 +201,7 @@ onMounted(() => {
             <p><strong>Created At:</strong> {{ loanStore.loanDetail.created_at }}</p>
             <br>
             <p><strong>DSR:</strong> {{ loanStore.loanDetail.dsr }}</p>
+            <p><strong>Summary:</strong> {{ loanStore.loanDetail.credit_summary }}</p>
 
             <div v-if="loanStore.loanDetail.documents?.length" class="mt-4">
               <h4 class="font-semibold mb-2 text-gray-800">Documents</h4>
