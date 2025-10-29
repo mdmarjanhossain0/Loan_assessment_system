@@ -172,7 +172,7 @@ onMounted(() => {
     </div>
 
     <!-- Loan Detail Modal -->
-    <transition name="fade">
+    <transition name="fade" style="background-color: rgba(0, 0, 0, 0.5);">
       <div
         v-if="showModal"
         class="fixed inset-0 flex items-center justify-center z-50 p-4"
@@ -199,6 +199,8 @@ onMounted(() => {
             <p><strong>Monthly Income:</strong> {{ loanStore.loanDetail.monthly_income }}</p>
             <p><strong>Status:</strong> {{ loanStore.loanDetail.status }}</p>
             <p><strong>Created At:</strong> {{ loanStore.loanDetail.created_at }}</p>
+            <br>
+            <p><strong>DSR:</strong> {{ loanStore.loanDetail.dsr }}</p>
 
             <div v-if="loanStore.loanDetail.documents?.length" class="mt-4">
               <h4 class="font-semibold mb-2 text-gray-800">Documents</h4>
@@ -218,6 +220,24 @@ onMounted(() => {
                     >{{ doc.file }}</a
                   >
 
+                  <div v-if="doc.parsed_data" class="mt-3">
+                    <p class="font-medium text-gray-800">Summary:</p>
+                    <pre
+                      class="bg-white bg-opacity-80 border p-2 rounded text-xs overflow-auto whitespace-pre-wrap"
+                      >GMI: {{ doc.parsed_data.gmi }}</pre
+                    >
+                    <pre
+                      class="bg-white bg-opacity-80 border p-2 rounded text-xs overflow-auto whitespace-pre-wrap"
+                      >EMO: {{ doc.parsed_data.emo }}</pre
+                    >
+                    <pre
+                      class="bg-white bg-opacity-80 border p-2 rounded text-xs overflow-auto whitespace-pre-wrap"
+                      >DSR: {{ doc.parsed_data.dsr }}</pre
+                    >
+                  </div>
+                  
+
+
                   <div v-if="doc.file && doc.file.endsWith('.jpg')" class="mt-3">
                     <img
                       :src="doc.file"
@@ -226,13 +246,13 @@ onMounted(() => {
                     />
                   </div>
 
-                  <div v-if="doc.extracted_text" class="mt-3">
+                  <!-- <div v-if="doc.extracted_text" class="mt-3">
                     <p class="font-medium text-gray-800">Extracted Text:</p>
                     <pre
                       class="bg-white bg-opacity-80 border p-2 rounded text-xs overflow-auto whitespace-pre-wrap"
                       >{{ doc.extracted_text }}</pre
                     >
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -242,7 +262,7 @@ onMounted(() => {
     </transition>
 
     <!-- Edit Loan Modal -->
-    <transition name="fade">
+    <transition name="fade" style="background-color: rgba(0, 0, 0, 0.5);">
       <div
         v-if="showEditModal"
         class="fixed inset-0 bg-opacity-60 flex items-center justify-center z-50 p-4"

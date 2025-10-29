@@ -11,5 +11,12 @@ drf-yasg
 
 pillow
 pytesseract
+pdfplumber
+
+
+celery[redis]==5.4.0
+django-celery-results
+django-celery-beat
+
 
 mysqlclient

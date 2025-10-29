@@ -18,7 +18,7 @@
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <!-- Primary Button -->
         <button
-          class="bg-yellow-400 text-blue-900 font-semibold px-8 py-3 rounded-full hover:bg-yellow-300 transition transform hover:scale-105 shadow-md">
+          class="bg-yellow-400 text-blue-900 font-semibold px-8 py-3 rounded-full hover:bg-yellow-300 transition transform hover:scale-105 shadow-md" @click="toLoanApplication">
           Apply Now
         </button>
 
@@ -34,3 +34,15 @@
     <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
   </section>
 </template>
+
+
+<script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
+
+function toLoanApplication() {
+  console.log("toLoanApplication")
+  router.push("/loan/apply")
+}
+</script>

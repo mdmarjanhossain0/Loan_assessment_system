@@ -32,10 +32,13 @@ from loan.utils import (
     calculate_dsr,
     extract_text_from_image,
     generate_credit_summary,
-    parse_salary_info
+    parse_salary_info,
+    extract_text_from_pdf
 )
 
-
+from loan.tasks import (
+    parse_document
+)
 class LoanApplicationViewSet(viewsets.ModelViewSet):
     queryset = LoanApplication.objects.all().order_by("-pk")
     serializer_class = LoanApplicationSerializer
@@ -60,12 +63,16 @@ class LoanApplicationViewSet(viewsets.ModelViewSet):
         document = LoanDocument.objects.create(
             document_type=doc_type, file=file
         )
+        parse_document.delay(document.pk)
 
-        text = extract_text_from_image(document.file.path)
-        document.extracted_text = text
-        parsed_data = parse_salary_info(text)
-        document.parsed_data = parsed_data
-        document.save()
+        # if document.file.path.split(".")[-1].lower() == "pdf":
+        #     text = extract_text_from_pdf(document.file.path)
+        # else:
+        #     text = extract_text_from_image(document.file.path)
+        # document.extracted_text = text
+        # parsed_data = parse_salary_info(text)
+        # document.parsed_data = parsed_data
+        # document.save()
 
         # Update application income if parsed
         # if parsed_data.get("monthly_salary"):

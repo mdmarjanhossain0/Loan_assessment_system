@@ -39,53 +39,9 @@
 
         <!-- Right -->
         <div class="flex items-center relative">
-          <button
-            @click="toggleUserMenu"
-            type="button"
-            class="flex items-center text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 
-            dark:focus:ring-gray-600"
-          >
-            <span class="sr-only">Open user menu</span>
-            <img
-              class="w-8 h-8 rounded-full"
-              src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-              alt="user photo"
-            />
-          </button>
+         
 
-          <!-- User dropdown -->
-          <div
-            v-show="userMenuOpen"
-            class="absolute right-0 mt-10 w-48 z-50 text-base list-none bg-white divide-y divide-gray-100 
-            rounded-md shadow dark:bg-gray-700 dark:divide-gray-600"
-          >
-            <div class="px-4 py-3">
-              <p class="text-sm font-medium text-gray-900 dark:text-white">Admin User</p>
-              <p class="text-xs text-gray-500 truncate dark:text-gray-400">
-                admin@example.com
-              </p>
-            </div>
-            <ul class="py-1">
-              <li>
-                <router-link
-                  to="/admin/settings"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 
-                  dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  Settings
-                </router-link>
-              </li>
-              <li>
-                <button
-                  @click="logout"
-                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 
-                  dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  Logout
-                </button>
-              </li>
-            </ul>
-          </div>
+       
         </div>
       </div>
     </div>
@@ -192,9 +148,6 @@ const LogoutIcon = {
 }
 
 const menuItems = [
-  { label: 'Dashboard', to: '/dashboard', icon: DashboardIcon },
-  { label: 'Users', to: 'users', icon: UsersIcon },
   { label: 'Applications', to: '/dashboard/loan', icon: AppsIcon },
-  { label: 'Settings', to: 'settings', icon: SettingsIcon }
 ]
 </script>
