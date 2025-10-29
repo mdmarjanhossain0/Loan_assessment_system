@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from "../stores/auth";
 import { useForm } from "vee-validate";
 import * as yup from "yup";
 import { ref } from "vue";

@@ -5,12 +5,27 @@ export const useLoanStore = defineStore("loan", {
   state: () => ({
     loans: [] as any[],
     loanDetail: null as any,
+    previous: false,
+    next: false
   }),
   actions: {
     async fetchLoans(page: number = 1) {
       try {
         const { data } = await api.get(`loan/applications/?page=${page}`);
         this.loans = data.results;
+        if (data.previous) {
+          this.previous = true;
+        }
+        else {
+          this.previous = false
+        }
+
+        if (data.next) {
+          this.next = true;
+        }
+        else {
+          this.next = false
+        }
         return data;
       } catch (error) {
         console.error("Error fetching loans:", error);

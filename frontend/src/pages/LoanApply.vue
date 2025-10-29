@@ -105,8 +105,8 @@ import { reactive, ref } from "vue";
 import * as yup from "yup";
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/api/loan/applications/";
-const DOCUMENTS_URL = "http://localhost:8000/api/loan/applications/upload_document/";
+const API_URL = "/api/loan/applications/";
+const DOCUMENTS_URL = "/api/loan/applications/upload_document/";
 
 const loading = ref(false);
 const successMessage = ref("");

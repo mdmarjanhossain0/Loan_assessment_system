@@ -148,7 +148,7 @@ onMounted(() => {
         <!-- Pagination -->
         <div class="flex justify-between items-center mt-6">
           <button
-            :disabled="!loanStore.loans.previous"
+            :disabled="!loanStore.previous"
             @click="loadLoans(currentPage - 1)"
             class="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300"
           >
@@ -156,7 +156,7 @@ onMounted(() => {
           </button>
           <span class="text-gray-600 text-sm">Page {{ currentPage }}</span>
           <button
-            :disabled="!loanStore.loans.next"
+            :disabled="!loanStore.next"
             @click="loadLoans(currentPage + 1)"
             class="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50 hover:bg-blue-700"
           >

@@ -42,7 +42,7 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const auth = useAuthStore();
   const publicPages = ["/", "/login", "/register", "/loan/apply",];
   const authRequired = !publicPages.includes(to.path);
