@@ -132,7 +132,7 @@ def parse_document(application_pk):
     
 
 
-# @shared_task
+@shared_task
 def check_applications():
     applications = LoanApplication.objects.filter(is_ai_processed=False)
     print(f"Total appllications {len(applications)}")
