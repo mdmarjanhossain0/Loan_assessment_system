@@ -1,11 +1,14 @@
 from rest_framework import serializers
-from loan.models import LoanApplication, LoanDocument
+from loan.models import (
+    LoanApplication,
+    # LoanDocument
+)
 
 
-class LoanDocumentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LoanDocument
-        fields = "__all__"
+# class LoanDocumentSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = LoanDocument
+#         fields = "__all__"
 
 
 class LoanApplicationSerializer(serializers.ModelSerializer):

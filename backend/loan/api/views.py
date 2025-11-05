@@ -11,12 +11,12 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from account.models import Account
 from loan.models import (
     LoanApplication,
-    LoanDocument
+    # LoanDocument
 )
 
 from loan.api.serializers import (
     LoanApplicationSerializer,
-    LoanDocumentSerializer
+    # LoanDocumentSerializer
 )
 from mysite.constants import (
     SUCCESS,
@@ -52,34 +52,26 @@ class LoanApplicationViewSet(viewsets.ModelViewSet):
         if self.request.method == "GET" and self.action == "retrieve":
             context["depth"] = 1
         return context
+    
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        parse_document.delay(instance.pk)
+
+
 
     
 
-    @action(detail=False, methods=["post"], parser_classes=[MultiPartParser, FormParser], serializer_class=LoanDocumentSerializer)
-    def upload_document(self, request):
-        doc_type = request.data.get("document_type")
-        file = request.FILES.get("file")
+    # @action(detail=False, methods=["post"], parser_classes=[MultiPartParser, FormParser], serializer_class=LoanDocumentSerializer)
+    # def upload_document(self, request):
+    #     doc_type = request.data.get("document_type")
+    #     file = request.FILES.get("file")
 
-        document = LoanDocument.objects.create(
-            document_type=doc_type, file=file
-        )
-        parse_document.delay(document.pk)
+    #     document = LoanDocument.objects.create(
+    #         document_type=doc_type, file=file
+    #     )
+    #     parse_document.delay(document.pk)
 
-        # if document.file.path.split(".")[-1].lower() == "pdf":
-        #     text = extract_text_from_pdf(document.file.path)
-        # else:
-        #     text = extract_text_from_image(document.file.path)
-        # document.extracted_text = text
-        # parsed_data = parse_salary_info(text)
-        # document.parsed_data = parsed_data
-        # document.save()
-
-        # Update application income if parsed
-        # if parsed_data.get("monthly_salary"):
-        #     application.monthly_income = parsed_data["monthly_salary"]
-        #     application.save()
-
-        return Response(LoanDocumentSerializer(document).data)
+    #     return Response(LoanDocumentSerializer(document).data)
 
 
     @action(detail=True, methods=["post"])

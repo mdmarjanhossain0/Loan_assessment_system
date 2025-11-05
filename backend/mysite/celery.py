@@ -13,7 +13,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'say-hello-every-30-seconds': {
         'task': 'loan.tasks.check_applications',
-        'schedule': timedelta(seconds=10),
+        'schedule': timedelta(seconds=10*60),
         'args': ()
     },
 }
