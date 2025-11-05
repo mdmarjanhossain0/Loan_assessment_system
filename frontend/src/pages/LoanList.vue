@@ -172,95 +172,102 @@ onMounted(() => {
     </div>
 
     <!-- Loan Detail Modal -->
-    <transition name="fade" style="background-color: rgba(0, 0, 0, 0.5);">
+  <transition name="fade" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div
+      v-if="showModal"
+      class="fixed inset-0 flex items-center justify-center z-50 p-4"
+    >
       <div
-        v-if="showModal"
-        class="fixed inset-0 flex items-center justify-center z-50 p-4"
-        
+        class="bg-white bg-opacity-95 backdrop-blur-md rounded-lg shadow-lg w-full max-w-2xl relative overflow-y-auto max-h-[90vh] p-6"
       >
-        <div
-          class="bg-white bg-opacity-90 backdrop-blur-md rounded-lg shadow-lg w-full max-w-2xl relative overflow-y-auto max-h-[90vh] p-6"
-          style="background: white;"
+        <button
+          @click="closeModal"
+          class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl"
         >
-          <button
-            @click="closeModal"
-            class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl"
-          >
-            ✕
-          </button>
-          <h3 class="text-xl font-semibold mb-4 text-gray-800">Loan Details</h3>
+          ✕
+        </button>
+        <h3 class="text-2xl font-semibold mb-4 text-gray-800 border-b pb-2">Loan Details</h3>
 
-          <div v-if="loanStore.loanDetail" class="space-y-2 text-sm text-gray-700">
+        <div v-if="loanStore.loanDetail" class="space-y-4 text-gray-700 text-sm">
+
+          <!-- Basic Info -->
+          <div class="grid grid-cols-2 gap-4">
             <p><strong>Applicant:</strong> {{ loanStore.loanDetail.applicant_name }}</p>
             <p><strong>Email:</strong> {{ loanStore.loanDetail.email }}</p>
             <p><strong>Phone:</strong> {{ loanStore.loanDetail.phone_number }}</p>
-            <p><strong>Type:</strong> {{ loanStore.loanDetail.type }}</p>
+            <p><strong>Type:</strong> {{ loanStore.loanDetail.type.replace('_', ' ') }}</p>
             <p><strong>Loan Amount:</strong> {{ loanStore.loanDetail.loan_amount.toLocaleString() }}</p>
-            <p><strong>Monthly Income:</strong> {{ loanStore.loanDetail.monthly_income }}</p>
-            <p><strong>Status:</strong> {{ loanStore.loanDetail.status }}</p>
-            <p><strong>Created At:</strong> {{ loanStore.loanDetail.created_at }}</p>
-            <br>
-            <p><strong>DSR:</strong> {{ loanStore.loanDetail.dsr }}</p>
-            <p><strong>Summary:</strong> {{ loanStore.loanDetail.credit_summary }}</p>
+            <p><strong>Monthly Income:</strong> {{ loanStore.loanDetail.monthly_income.toLocaleString() }}</p>
+            <p><strong>Total Monthly Debt:</strong> {{ loanStore.loanDetail.total_monthly_debt ?? '-' }}</p>
+            <p><strong>Status:</strong>
+              <span
+                class="px-2 py-1 rounded text-xs font-semibold"
+                :class="{
+                  'bg-yellow-100 text-yellow-700': loanStore.loanDetail.status === 'Pending',
+                  'bg-green-100 text-green-700': loanStore.loanDetail.status === 'Approved',
+                  'bg-red-100 text-red-700': loanStore.loanDetail.status === 'Rejected',
+                }"
+              >
+                {{ loanStore.loanDetail.status }}
+              </span>
+            </p>
+            <p><strong>AI Status:</strong>
+              <span
+                class="px-2 py-1 rounded text-xs font-semibold"
+                :class="{
+                  'bg-green-100 text-green-700': loanStore.loanDetail.ai_status === 'Approved',
+                  'bg-red-100 text-red-700': loanStore.loanDetail.ai_status === 'Declined',
+                }"
+              >
+                {{ loanStore.loanDetail.ai_status }}
+              </span>
+            </p>
+          </div>
 
-            <div v-if="loanStore.loanDetail.documents?.length" class="mt-4">
-              <h4 class="font-semibold mb-2 text-gray-800">Documents</h4>
-              <div class="space-y-3">
-                <div
-                  v-for="doc in loanStore.loanDetail.documents"
-                  :key="doc.id"
-                  class="border p-3 rounded bg-gray-50 bg-opacity-70"
-                >
-                  <p><strong>Type:</strong> {{ doc.document_type }}</p>
-                  <p><strong>Uploaded:</strong> {{ doc.created_at }}</p>
-                  <p><strong>File:</strong></p>
-                  <a
-                    :href="doc.file"
-                    target="_blank"
-                    class="text-blue-600 underline break-words"
-                    >{{ doc.file }}</a
-                  >
+          <!-- File Section -->
+          <div class="mt-4">
+            <h4 class="font-semibold text-gray-800 mb-2">Uploaded Document</h4>
+            <p><strong>Type:</strong> {{ loanStore.loanDetail.document_type }}</p>
+            <p><strong>File:</strong>
+              <a :href="loanStore.loanDetail.file" target="_blank" class="text-blue-600 underline break-words">
+                {{ loanStore.loanDetail.file.split('/').pop() }}
+              </a>
+            </p>
+          </div>
 
-                  <div v-if="doc.parsed_data" class="mt-3">
-                    <p class="font-medium text-gray-800">Summary:</p>
-                    <pre
-                      class="bg-white bg-opacity-80 border p-2 rounded text-xs overflow-auto whitespace-pre-wrap"
-                      >GMI: {{ doc.parsed_data.gmi }}</pre
-                    >
-                    <pre
-                      class="bg-white bg-opacity-80 border p-2 rounded text-xs overflow-auto whitespace-pre-wrap"
-                      >EMO: {{ doc.parsed_data.emo }}</pre
-                    >
-                    <pre
-                      class="bg-white bg-opacity-80 border p-2 rounded text-xs overflow-auto whitespace-pre-wrap"
-                      >DSR: {{ doc.parsed_data.dsr }}</pre
-                    >
-                  </div>
-                  
-
-
-                  <div v-if="doc.file && doc.file.endsWith('.jpg')" class="mt-3">
-                    <img
-                      :src="doc.file"
-                      alt="Document preview"
-                      class="max-h-64 rounded border"
-                    />
-                  </div>
-
-                  <!-- <div v-if="doc.extracted_text" class="mt-3">
-                    <p class="font-medium text-gray-800">Extracted Text:</p>
-                    <pre
-                      class="bg-white bg-opacity-80 border p-2 rounded text-xs overflow-auto whitespace-pre-wrap"
-                      >{{ doc.extracted_text }}</pre
-                    >
-                  </div> -->
-                </div>
-              </div>
+          <!-- Key Metrics -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div class="p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-400">
+              <p class="font-semibold text-yellow-700">DSR</p>
+              <p class="text-lg font-bold">{{ loanStore.loanDetail.parsed_data.dsr }}%</p>
+              <p class="text-xs text-gray-600">{{ loanStore.loanDetail.parsed_data.dsr_explanation }}</p>
             </div>
+            <div class="p-4 rounded-lg bg-green-50 border-l-4 border-green-400">
+              <p class="font-semibold text-green-700">Credit Risk Score</p>
+              <p class="text-lg font-bold">{{ loanStore.loanDetail.parsed_data.creadit_risk_score }}</p>
+              <p class="text-xs text-gray-600">{{ loanStore.loanDetail.parsed_data.creadit_risk_score_explanation }}</p>
+            </div>
+            <div class="p-4 rounded-lg bg-blue-50 border-l-4 border-blue-400">
+              <p class="font-semibold text-blue-700">Max Loan Eligibility</p>
+              <p class="text-lg font-bold">${{ loanStore.loanDetail.parsed_data.max_loan_eligibility.toLocaleString() }}</p>
+              <p class="text-xs text-gray-600">{{ loanStore.loanDetail.parsed_data.max_loan_eligibility_explanation }}</p>
+            </div>
+            <div class="p-4 rounded-lg bg-purple-50 border-l-4 border-purple-400">
+              <p class="font-semibold text-purple-700">Behavioral Responsibility</p>
+              <p class="text-lg font-bold">{{ loanStore.loanDetail.parsed_data.behavioral_responsibility_scoring }}</p>
+              <p class="text-xs text-gray-600">{{ loanStore.loanDetail.parsed_data.behavioral_responsibility_scoring_explanation }}</p>
+            </div>
+          </div>
+
+          <!-- Credit Summary -->
+          <div class="mt-4 p-4 border rounded bg-gray-50">
+            <p class="font-semibold text-gray-800 mb-1">Credit Summary</p>
+            <p class="text-sm">{{ loanStore.loanDetail.credit_summary }}</p>
           </div>
         </div>
       </div>
-    </transition>
+    </div>
+  </transition>
 
     <!-- Edit Loan Modal -->
     <transition name="fade" style="background-color: rgba(0, 0, 0, 0.5);">

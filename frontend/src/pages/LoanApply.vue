@@ -5,7 +5,7 @@
     </h2>
 
     <form @submit.prevent="submitForm" class="space-y-6">
-      <!-- Applicant Info (unchanged) -->
+      <!-- Applicant Info -->
       <div class="grid md:grid-cols-2 gap-6">
         <div>
           <label class="block text-gray-700 mb-2">Full Name</label>
@@ -63,24 +63,10 @@
         <textarea v-model="form.credit_summary" rows="3" class="input" placeholder="Describe your financial background (optional)"></textarea>
       </div>
 
-      <!-- Multiple Documents Upload -->
+      <!-- Single Document Upload -->
       <div class="space-y-4">
-        <label class="block text-gray-700 mb-2">Upload Documents</label>
-        <div
-          v-for="(doc, index) in documents"
-          :key="index"
-          class="flex items-center gap-4"
-        >
-          <input type="file" @change="onFileChange($event, index)" class="border rounded-md p-2" />
-          <select v-model="doc.type" class="input w-48">
-            <option value="">Select Type</option>
-            <option value="job_letter">Job Letter</option>
-            <option value="payslip">Payslip</option>
-            <option value="bank_statement">Bank Statement</option>
-          </select>
-          <button type="button" class="text-red-500" @click="removeDocument(index)">Remove</button>
-        </div>
-        <button type="button" class="text-blue-600 underline mt-2" @click="addDocument">Add Another Document</button>
+        <label class="block text-gray-700 mb-2">Upload Document</label>
+        <input type="file" @change="onFileChange" class="border rounded-md p-2 w-full" />
       </div>
 
       <!-- Submit Button -->
@@ -103,10 +89,9 @@
 <script setup>
 import { reactive, ref } from "vue";
 import * as yup from "yup";
-import axios from "axios";
+import api from "../utils/axios";
 
-const API_URL = "/api/loan/applications/";
-const DOCUMENTS_URL = "/api/loan/applications/upload_document/";
+const API_URL = "loan/applications/";
 
 const loading = ref(false);
 const successMessage = ref("");
@@ -120,10 +105,9 @@ const form = reactive({
   monthly_income: "",
   total_monthly_debt: "",
   credit_summary: "",
-  document_ids: [], // to store uploaded document IDs
 });
 
-const documents = reactive([{ file: null, type: "" }]);
+const file = ref(null);
 const errors = reactive({});
 
 // Validation Schema
@@ -135,66 +119,43 @@ const schema = yup.object().shape({
   loan_amount: yup.number().typeError("Loan amount must be a number").positive("Must be greater than 0").required("Loan amount is required"),
 });
 
-// Document handlers
-const addDocument = () => documents.push({ file: null, type: "" });
-const removeDocument = (index) => documents.splice(index, 1);
-const onFileChange = (event, index) => { documents[index].file = event.target.files[0]; };
+// File handler
+const onFileChange = (event) => {
+  file.value = event.target.files[0];
+};
 
 const submitForm = async () => {
   // Reset errors and messages
   Object.keys(errors).forEach((key) => (errors[key] = ""));
-  loading.value = true;
   successMessage.value = "";
+  loading.value = true;
 
   try {
-    // Validate the form
+    // Validate form
     await schema.validate(form, { abortEarly: false });
 
-    // Upload documents one by one
-    const uploadedIds = [];
-
-    for (const doc of documents) {
-      if (doc.file && doc.type) {
-        const docFormData = new FormData();
-        docFormData.append("file", doc.file);
-        docFormData.append("document_type", doc.type);
-
-        try {
-          const docResponse = await axios.post(DOCUMENTS_URL, docFormData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-          // Collect uploaded document IDs
-          uploadedIds.push(docResponse.data.id);
-        } catch (err) {
-          console.error("Error uploading document:", err);
-        }
-      }
-    }
-
-    if (uploadedIds.length === 0) {
-      console.error("No documents uploaded");
+    if (!file.value) {
+      alert("Please upload a document file");
+      loading.value = false;
       return;
     }
 
-    // Assign uploaded IDs to form.documents (array of ints)
-    form.documents = [...uploadedIds];
+    // Prepare FormData with file and form fields
+    const formData = new FormData();
+    Object.keys(form).forEach((key) => formData.append(key, form[key]));
+    formData.append("file", file.value);
 
-    // Submit main application
-    const response = await axios.post(API_URL, form, {
-      headers: { "Content-Type": "application/json" },
+    const response = await api.post(API_URL, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
     console.log("Application submitted:", response.data);
     successMessage.value = "Application submitted successfully!";
 
-    // Reset the form and documents
-    Object.keys(form).forEach((key) => {
-      if (key !== "documents") form[key] = "";
-    });
-    documents.splice(0, documents.length, { file: null, type: "" });
-    form.documents = [];
+    // Reset form
+    Object.keys(form).forEach((key) => (form[key] = ""));
+    file.value = null;
   } catch (err) {
-    // Handle validation errors
     if (err.inner) {
       err.inner.forEach((e) => (errors[e.path] = e.message));
     } else {
@@ -204,6 +165,4 @@ const submitForm = async () => {
     loading.value = false;
   }
 };
-
 </script>
-

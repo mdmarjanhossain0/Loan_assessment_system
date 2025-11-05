@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { reactive, onMounted } from "vue";
 import { useAuthStore } from "../stores/auth";
-import axios from "axios";
+import api from "../utils/axios";
 
 const auth = useAuthStore();
 const form = reactive({ username: "", email: "" });
@@ -31,7 +31,7 @@ onMounted(() => {
 });
 
 const onSubmit = async () => {
-  await axios.put("/api/account/update/", form, {
+  await api.put("/api/account/update/", form, {
     headers: { Authorization: `Bearer ${auth.token}` },
   });
   await auth.fetchProfile();

@@ -14,14 +14,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import api from "../utils/axios";
 import { useAuthStore } from "../stores/auth";
 
 const auth = useAuthStore();
 const users = ref([]);
 
 onMounted(async () => {
-  const res = await axios.get("/api/account/list/", {
+  const res = await api.get("/api/account/list/", {
     headers: { Authorization: `Bearer ${auth.token}` },
   });
   users.value = res.data;
